@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galería de Imágenes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .gallery img {
+            max-width: 100%;
+            height: auto;
+        }
+        .gallery-item {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="mb-4">Cargar Imágenes a la Galería</h2>
+        
+        <form id="imageForm">
+            <div class="mb-3">
+                <label for="imageInput" class="form-label">Seleccionar Imágenes</label>
+                <input type="file" class="form-control" id="imageInput" accept="image/*" multiple required>
+            </div>
+            <div class="mb-3">
+                <label for="imageDescription" class="form-label">Descripción de las Imágenes</label>
+                <textarea class="form-control" id="imageDescription" rows="2" placeholder="Agrega una descripción para las imágenes..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar Imágenes</button>
+        </form>
+
+        <h2 class="mt-5 mb-4">Galería de Imágenes</h2>
+        <div class="row gallery" id="gallery">
+        </div>
+    </div>
+
+    <script>
+        $('#imageForm').on('submit', function(event) {
+            event.preventDefault();
+
+            const files = $('#imageInput')[0].files;
+            const description = $('#imageDescription').val();
+
+            if (files.length === 0) {
+                alert('Por favor, selecciona al menos una imagen.');
+                return;
+            }
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+
+                const imageURL = URL.createObjectURL(file);
+
+                const date = new Date();
+                const timestamp = ('0' + date.getDate()).slice(-2) + '/' + 
+                                  ('0' + (date.getMonth() + 1)).slice(-2) + '/' + 
+                                  date.getFullYear() + ' ' + 
+                                  ('0' + date.getHours()).slice(-2) + ':' + 
+                                  ('0' + date.getMinutes()).slice(-2) + ':' + 
+                                  ('0' + date.getSeconds()).slice(-2);
+
+                $('#gallery').append(`
+                    <div class="col-md-4 gallery-item">
+                        <div class="card">
+                            <img src="${imageURL}" class="card-img-top" alt="Imagen">
+                            <div class="card-body">
+                                <p class="card-text">${description}</p>
+                                <p class="text-muted"><small>Cargado el ${timestamp}</small></p>
+                            </div>
+                        </div>
+                    </div>
+                `);
+            }
+
+            $('#imageForm')[0].reset();
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Productos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="mb-4">Formulario de Productos</h2>
+        
+        <form id="productForm">
+            <div class="mb-3">
+                <label for="productName" class="form-label">Nombre del Producto</label>
+                <input type="text" class="form-control" id="productName" required>
+            </div>
+            <div class="mb-3">
+                <label for="productDescription" class="form-label">Descripción del Producto</label>
+                <textarea class="form-control" id="productDescription" rows="2" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="productPrice" class="form-label">Precio del Producto</label>
+                <input type="number" class="form-control" id="productPrice" step="0.01" required>
+            </div>
+            <div class="mb-3">
+                <label for="productQuantity" class="form-label">Cantidad del Producto</label>
+                <input type="number" class="form-control" id="productQuantity" required>
+            </div>
+            <button type="submit" class="btn btn-primary" id="addProductBtn">Agregar Producto</button>
+            <button type="button" class="btn btn-success d-none" id="updateProductBtn">Actualizar Producto</button>
+        </form>
+
+        <h2 class="mt-5 mb-4">Lista de Productos</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre del Producto</th>
+                    <th>Descripción</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                    <th>Fecha de Registro</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="productTableBody">
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        let productId = 0;
+        let editProductId = null;
+
+        $('#productForm').on('submit', function(event) {
+            event.preventDefault();
+
+            if(editProductId === null) {
+                const productName = $('#productName').val();
+                const productDescription = $('#productDescription').val();
+                const productPrice = $('#productPrice').val();
+                const productQuantity = $('#productQuantity').val();
+
+                const date = new Date();
+                const registrationDate = ('0' + date.getDate()).slice(-2) + '/' + 
+                                         ('0' + (date.getMonth() + 1)).slice(-2) + '/' + 
+                                         date.getFullYear();
+
+                productId++;
+
+                $('#productTableBody').append(`
+                    <tr data-id="${productId}">
+                        <td>${productId}</td>
+                        <td>${productName}</td>
+                        <td>${productDescription}</td>
+                        <td>$${parseFloat(productPrice).toFixed(2)}</td>
+                        <td>${productQuantity}</td>
+                        <td>${registrationDate}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm editBtn">Editar</button>
+                            <button class="btn btn-danger btn-sm deleteBtn">Eliminar</button>
+                        </td>
+                    </tr>
+                `);
+
+                $('#productForm')[0].reset();
+            }
+        });
+
+        $('#productTableBody').on('click', '.deleteBtn', function() {
+            $(this).closest('tr').remove();  
+        });
+
+        $('#productTableBody').on('click', '.editBtn', function() {
+            const row = $(this).closest('tr');
+            const id = row.data('id');
+            const productName = row.find('td:eq(1)').text();
+            const productDescription = row.find('td:eq(2)').text();
+            const productPrice = row.find('td:eq(3)').text().substring(1); 
+            const productQuantity = row.find('td:eq(4)').text();
+
+            $('#productName').val(productName);
+            $('#productDescription').val(productDescription);
+            $('#productPrice').val(productPrice);
+            $('#productQuantity').val(productQuantity);
+
+            $('#addProductBtn').addClass('d-none');
+            $('#updateProductBtn').removeClass('d-none');
+
+            editProductId = id;
+        });
+
+        $('#updateProductBtn').on('click', function() {
+            const productName = $('#productName').val();
+            const productDescription = $('#productDescription').val();
+            const productPrice = $('#productPrice').val();
+            const productQuantity = $('#productQuantity').val();
+
+            const row = $(`tr[data-id="${editProductId}"]`);
+            row.find('td:eq(1)').text(productName);
+            row.find('td:eq(2)').text(productDescription);
+            row.find('td:eq(3)').text(`$${parseFloat(productPrice).toFixed(2)}`);
+            row.find('td:eq(4)').text(productQuantity);
+
+            $('#productForm')[0].reset();
+            $('#addProductBtn').removeClass('d-none');
+            $('#updateProductBtn').addClass('d-none');
+
+            editProductId = null;
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+</body>
+</html>
